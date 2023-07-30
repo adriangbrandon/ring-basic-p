@@ -25,7 +25,7 @@ Check that there is no errors.
 
 Now put the .dat file inside a folder.
 
-3. Building the index. After compiling the code we should have an executable called `build-index` and `build-index-uring` in `build`. Now run:
+3. Building the index. After compiling the code we should have an executable called `build-index` in `build`. Now run:
 
 ```Bash
 ./build-index <absolute-path-to-the-.dat-file> <type-ring>
