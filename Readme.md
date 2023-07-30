@@ -57,6 +57,3 @@ After running that command, you should see the number of the query, the number o
 ```Bash
 <query number>;<number of results>;<elapsed time>
 ```
----
-
-At the moment, we can find the rest of the complementary material at [this webpage](http://compact-leapfrog.tk/). Note that we will find instructions to run the code there, and although the instructions are different from the ones in this repository, they should work too.
