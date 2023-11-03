@@ -184,7 +184,7 @@ void query(const std::string &file, const std::string &queries, const uint64_t l
                     ring::veo::veo_simple<iterator_type, trait_type>> algorithm_type;
 #endif
 #endif
-            typedef std::vector<typename algorithm_type::tuple_type> results_type;
+            typedef ::util::results_collector<typename algorithm_type::tuple_type> results_type;
             results_type res;
 
             start = ::util::time::usage::now();

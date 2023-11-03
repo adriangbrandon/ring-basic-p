@@ -174,7 +174,7 @@ void query(const std::string &file, const std::string &queries, uint64_t limit){
             typedef ring::ltj_algorithm_unidirectional<iterator_type,
                     ring::veo::veo_simple<iterator_type, trait_type>> algorithm_type;
 #endif
-            typedef std::vector<typename algorithm_type::tuple_type> results_type;
+            typedef ::util::results_collector<typename algorithm_type::tuple_type> results_type;
             results_type res;
 
             start = ::util::time::usage::now();

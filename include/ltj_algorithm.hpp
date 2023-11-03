@@ -32,6 +32,7 @@
 #include <veo_adaptive.hpp>
 #include <veo_random.hpp>
 #include <veo_random_lonely.hpp>
+#include <results_collector.hpp>
 
 namespace ring {
 
@@ -50,6 +51,7 @@ namespace ring {
         typedef std::unordered_map<var_type, std::vector<ltj_iter_type*>> var_to_iterators_type;
         typedef std::vector<std::pair<var_type, value_type>> tuple_type;
         typedef std::chrono::high_resolution_clock::time_point time_point_type;
+        typedef ::util::results_collector<tuple_type> results_type;
 
     private:
         const std::vector<triple_pattern>* m_ptr_triple_patterns;
@@ -164,7 +166,8 @@ namespace ring {
         * @param limit_results     Limit of results
         * @param timeout_seconds   Timeout in seconds
         */
-        void join(std::vector<tuple_type> &res,
+        void join(/*vector<tuple_type> &res,*/
+                  results_type &res,
                   const size_type limit_results = 0, const size_type timeout_seconds = 0){
             if(m_is_empty) return;
             time_point_type start = std::chrono::high_resolution_clock::now();
@@ -172,7 +175,7 @@ namespace ring {
             search(0, t, res, start, limit_results, timeout_seconds);
         };
 
-        void join_v2(std::vector<tuple_type> &res,
+        void join_v2(results_type &res,
                   const size_type limit_results = 0, const size_type timeout_seconds = 0){
             if(m_is_empty) return;
             time_point_type start = std::chrono::high_resolution_clock::now();
@@ -198,7 +201,7 @@ namespace ring {
          * @param limit_results     Limit of results
          * @param timeout_seconds   Timeout in seconds
          */
-        bool search(const size_type j, tuple_type &tuple, std::vector<tuple_type> &res,
+        bool search(const size_type j, tuple_type &tuple,  results_type &res,
                     const time_point_type start,
                     const size_type limit_results = 0, const size_type timeout_seconds = 0){
 
@@ -214,8 +217,16 @@ namespace ring {
 
             if(j == m_veo.size()){
                 //Report results
-                res.emplace_back(tuple);
-                /*std::cout << "Add result" << std::endl;
+                //res.emplace_back(tuple);
+                res.add(tuple);
+#if EXPT_TIME_SOL
+                if(res.size() % 1000 == 0){
+                    time_point_type stop = chrono::high_resolution_clock::now();
+                    auto sec = chrono::duration_cast<chrono::nanoseconds>(stop-start).count();
+                    std::cerr << res.size() << ";" << sec << std::endl;
+                }
+#endif
+                /*cout << "Add result" << endl;
                 for(const auto &dat : tuple){
                     std::cout << "{" << (uint64_t) dat.first << "=" << dat.second << "} ";
                 }
@@ -223,6 +234,7 @@ namespace ring {
             }else{
                 var_type x_j = m_veo.next();
                 //std::cout << "Variable: " << (uint64_t) x_j << std::endl;
+                //std::cout << (uint64_t) x_j << std::endl;
                 std::vector<ltj_iter_type*>& itrs = m_var_to_iterators[x_j];
                 bool ok;
                 if(itrs.size() == 1 && itrs[0]->in_last_level()) {//Lonely variables
@@ -272,7 +284,7 @@ namespace ring {
             return true;
         };
 
-        bool search_v2(const size_type j, tuple_type &tuple, std::vector<tuple_type> &res,
+        bool search_v2(const size_type j, tuple_type &tuple, results_type &res,
                     const time_point_type start,
                     const size_type limit_results = 0, const size_type timeout_seconds = 0){
 
@@ -288,7 +300,7 @@ namespace ring {
 
             if(j == m_veo.size()){
                 //Report results
-                res.emplace_back(tuple);
+                res.add(tuple);
                 /*std::cout << "Add result" << std::endl;
                 for(const auto &dat : tuple){
                     std::cout << "{" << (uint64_t) dat.first << "=" << dat.second << "} ";

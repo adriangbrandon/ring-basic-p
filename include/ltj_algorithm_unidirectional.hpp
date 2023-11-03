@@ -29,10 +29,11 @@
 #include <veo_simple.hpp>
 #include <veo_adaptive.hpp>
 #include <wt_intersection_iterator.hpp>
+#include <results_collector.hpp>
 
 namespace ring {
 
-    template<class iterator_t = ltj_iterator_unidirectional<uring<>, uint64_t, uint8_t>,
+    template<class iterator_t = ltj_iterator_unidirectional<uring<>, uint8_t, uint64_t>,
              class veo_t = veo::veo_adaptive<iterator_t, util::trait_size> >
     class ltj_algorithm_unidirectional {
 
@@ -48,6 +49,7 @@ namespace ring {
         typedef std::vector<std::pair<var_type, value_type>> tuple_type;
         typedef std::chrono::high_resolution_clock::time_point time_point_type;
         typedef typename ring_type::bwt_type::wm_type wm_type;
+        typedef ::util::results_collector<tuple_type> results_type;
 
     private:
         const std::vector<triple_pattern>* m_ptr_triple_patterns;
@@ -162,7 +164,7 @@ namespace ring {
         * @param limit_results     Limit of results
         * @param timeout_seconds   Timeout in seconds
         */
-        void join(std::vector<tuple_type> &res,
+        void join(results_type &res,
                   const size_type limit_results = 0, const size_type timeout_seconds = 0){
             if(m_is_empty) return;
             time_point_type start = std::chrono::high_resolution_clock::now();
@@ -180,7 +182,7 @@ namespace ring {
          * @param limit_results     Limit of results
          * @param timeout_seconds   Timeout in seconds
          */
-        bool search(const size_type j, tuple_type &tuple, std::vector<tuple_type> &res,
+        bool search(const size_type j, tuple_type &tuple, results_type &res,
                     const time_point_type start,
                     const size_type limit_results = 0, const size_type timeout_seconds = 0){
 
@@ -196,7 +198,7 @@ namespace ring {
 
             if(j == m_veo.size()){
                 //Report results
-                res.emplace_back(tuple);
+                res.add(tuple);
             }else{
                 var_type x_j = m_veo.next();
                 std::vector<ltj_iter_type*>& itrs = m_var_to_iterators[x_j];
