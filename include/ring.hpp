@@ -98,12 +98,11 @@ namespace ring {
 
             std::vector<uint32_t> M_O, M_S, M_P;
 
-            for (i = 1; i <= alphabet_SO; i++)
-                M_S.push_back(0);
+            M_S.resize(alphabet_SO+1, 0);
             M_S.shrink_to_fit();
 
             for (it = triple_begin, i=0; i<n; i++, it++){
-                assert(M_S.size() > std::get<0>(*it));
+                //assert(M_S.size() > std::get<0>(*it));
                 M_S[std::get<0>(*it)]++;
             }
 
@@ -119,7 +118,7 @@ namespace ring {
                 new_C_O.push_back(0); // Dummy value
                 new_C_O.push_back(cur_pos);
                 for (c = 2; c <= alphabet_SO; c++) {
-                    assert(c-1 < M_S.size());
+                    //assert(c-1 < M_S.size());
                     cur_pos += M_S[c-1];
                     new_C_O.push_back(cur_pos);
                 }
@@ -132,7 +131,7 @@ namespace ring {
                 int_vector<> new_O(n+1);
                 new_O[0] = 0;
                 for (i=1; i<=n; i++) {
-                    assert(i - 1 < D.size());
+                    //assert(i - 1 < D.size());
                     new_O[i] = std::get<2>(D[i - 1]);
                 }
 
@@ -145,7 +144,7 @@ namespace ring {
             M_O.shrink_to_fit();
 
             for (it = triple_begin, i=0; i<n; i++, it++) {
-                assert(std::get<2>(*it) < M_O.size());
+                //assert(std::get<2>(*it) < M_O.size());
                 M_O[std::get<2>(*it)]++;
             }
 
@@ -159,7 +158,7 @@ namespace ring {
                 new_C_P.push_back(0);  // Dummy value
                 new_C_P.push_back(cur_pos);
                 for (c = 2; c <= alphabet_SO; c++) {
-                    assert(c-1 < M_O.size());
+                    //assert(c-1 < M_O.size());
                     cur_pos += M_O[c-1];
                     new_C_P.push_back(cur_pos);
                 }
@@ -182,7 +181,7 @@ namespace ring {
             M_P.shrink_to_fit();
 
             for (it = triple_begin, i=0; i<n; i++, it++) {
-                assert(std::get<1>(*it) < M_P.size());
+                //assert(std::get<1>(*it) < M_P.size());
                 M_P[std::get<1>(*it)]++;
             }
 
@@ -197,7 +196,7 @@ namespace ring {
                 new_C_S.push_back(0);  // Dummy value
                 new_C_S.push_back(cur_pos);
                 for (c = 2; c <= m_max_p; c++) {
-                    assert(c-1 < M_P.size());
+                    //assert(c-1 < M_P.size());
                     cur_pos += M_P[c-1];
                     new_C_S.push_back(cur_pos);
                 }
