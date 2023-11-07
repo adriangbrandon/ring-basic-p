@@ -81,7 +81,7 @@ namespace ring {
                 if (std::get<2>(D[0]) > U)
                     U = std::get<2>(D[0]);
 
-                for (uint64_t i = 1; i < n; i++) {
+                for (i = 1; i < n; i++) {
                     if (std::get<1>(D[i]) > m_max_p)
                         m_max_p = std::get<1>(D[i]);
 
@@ -172,6 +172,7 @@ namespace ring {
             M_P.shrink_to_fit();
 
             for (it = triple_begin, i=0; i<n; i++, it++)
+                assert(std::get<1>(*it) == 1);
                 M_P[std::get<1>(*it)]++;
 
             stable_sort(D.begin(), D.end(), [](const spo_triple& a,

@@ -38,8 +38,9 @@ void build_index(const std::string &dataset, const std::string &output){
     uint64_t s, p , o;
     do {
         ifs >> s >> p >> o;
+        if(ifs.eof()) break;
         D.push_back(spo_triple(s, p, o));
-    } while (!ifs.eof());
+    } while (true);
 
     D.shrink_to_fit();
     cout << "--Indexing " << D.size() << " triples" << endl;
