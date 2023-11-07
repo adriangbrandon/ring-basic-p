@@ -102,8 +102,11 @@ namespace ring {
                 M_S.push_back(0);
             M_S.shrink_to_fit();
 
-            for (it = triple_begin, i=0; i<n; i++, it++)
+            for (it = triple_begin, i=0; i<n; i++, it++){
+                assert(M_S.size() > std::get<0>(*it));
                 M_S[std::get<0>(*it)]++;
+            }
+
 
             // Sorts the triples lexycographically
             sort(triple_begin, triple_end);
@@ -116,6 +119,7 @@ namespace ring {
                 new_C_O.push_back(0); // Dummy value
                 new_C_O.push_back(cur_pos);
                 for (c = 2; c <= alphabet_SO; c++) {
+                    assert(c-1 < M_S.size());
                     cur_pos += M_S[c-1];
                     new_C_O.push_back(cur_pos);
                 }
@@ -127,8 +131,10 @@ namespace ring {
 
                 int_vector<> new_O(n+1);
                 new_O[0] = 0;
-                for (i=1; i<=n; i++)
-                    new_O[i] = std::get<2>(D[i-1]);
+                for (i=1; i<=n; i++) {
+                    assert(i - 1 < D.size());
+                    new_O[i] = std::get<2>(D[i - 1]);
+                }
 
                 util::bit_compress(new_O);
                 // builds the WT for BWT(O)
@@ -138,8 +144,10 @@ namespace ring {
             M_O.resize(alphabet_SO+1, 0);
             M_O.shrink_to_fit();
 
-            for (it = triple_begin, i=0; i<n; i++, it++)
+            for (it = triple_begin, i=0; i<n; i++, it++) {
+                assert(std::get<2>(*it) < M_O.size());
                 M_O[std::get<2>(*it)]++;
+            }
 
             stable_sort(D.begin(), D.end(), [](const spo_triple& a,
                     const spo_triple& b) {return std::get<2>(a) < std::get<2>(b);});
@@ -151,6 +159,7 @@ namespace ring {
                 new_C_P.push_back(0);  // Dummy value
                 new_C_P.push_back(cur_pos);
                 for (c = 2; c <= alphabet_SO; c++) {
+                    assert(c-1 < M_O.size());
                     cur_pos += M_O[c-1];
                     new_C_P.push_back(cur_pos);
                 }
@@ -161,8 +170,9 @@ namespace ring {
 
                 int_vector<> new_P(n+1);
                 new_P[0] = 0;
-                for (i=1; i<=n; i++)
-                    new_P[i] = std::get<1>(D[i-1]);
+                for (i=1; i<=n; i++) {
+                    new_P[i] = std::get<1>(D[i - 1]);
+                }
 
                 util::bit_compress(new_P);
                 m_bwt_p = bwt_p_type(new_P, new_C_P);
@@ -171,9 +181,10 @@ namespace ring {
             M_P.resize(m_max_p+1, 0);
             M_P.shrink_to_fit();
 
-            for (it = triple_begin, i=0; i<n; i++, it++)
-                assert(std::get<1>(*it) == 1);
+            for (it = triple_begin, i=0; i<n; i++, it++) {
+                assert(std::get<1>(*it) < M_P.size());
                 M_P[std::get<1>(*it)]++;
+            }
 
             stable_sort(D.begin(), D.end(), [](const spo_triple& a,
                     const spo_triple& b) {return std::get<1>(a) < std::get<1>(b); });
@@ -186,6 +197,7 @@ namespace ring {
                 new_C_S.push_back(0);  // Dummy value
                 new_C_S.push_back(cur_pos);
                 for (c = 2; c <= m_max_p; c++) {
+                    assert(c-1 < M_P.size());
                     cur_pos += M_P[c-1];
                     new_C_S.push_back(cur_pos);
                 }
