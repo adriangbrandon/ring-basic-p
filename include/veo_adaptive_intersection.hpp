@@ -203,11 +203,11 @@ namespace ring {
                 m_index = 0;
                 auto t2 = std::chrono::high_resolution_clock::now();
                 auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count();
-                std::cout << "Time init VEO: " << time << std::endl;
-                /*for(const auto & v : m_var_info){
+                for(const auto & v : m_var_info){
                     std::cout << "var=" << (uint64_t) v.name << " weight=" << v.weight << std::endl;
-                }*/
-                //std::cout << "Done. " << std::endl;
+                }
+                std::cout << "Done. " << std::endl;
+                std::cout << "Time init VEO: " << time << std::endl;
 
             }
 
@@ -299,11 +299,11 @@ namespace ring {
                     auto pos_last = m_bound.top();
                     const auto &related = m_var_info[pos_last].related;
                     version_type version;
+                    std::vector<size_type> wp, min_wp;
                     for(const auto &rel : related){ //Iterates on the related variables
                         const auto pos = m_hash_table_position[rel];
                         if(!m_var_info[pos].is_bound){
                             size_type min_w;
-                            std::vector<size_type> wp, min_wp;
                             auto &iters = m_ptr_var_iterators->at(rel);
                             for(size_type i = 0; i < iters.size(); ++i ){ //Check each iterator
                                 ltj_iter_type* iter = iters[i];
