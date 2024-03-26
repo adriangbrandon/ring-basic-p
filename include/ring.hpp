@@ -676,7 +676,8 @@ namespace ring {
         /**********************************/
 
         template<class BWT>
-        std::vector<size_type> aprox_intersect_bwd(const size_type k, const bwt_interval &I,  const BWT &bwt_tgt){
+        void aprox_intersect_bwd(const size_type k, const bwt_interval &I,  const BWT &bwt_tgt,
+                                 std::vector<size_type> &res){
 
             typedef typename BWT::wm_type::node_type node_type;
             typedef struct {
@@ -688,7 +689,6 @@ namespace ring {
             range_type left_range, right_range;
             size_type rnk = 0, i = 0;
 
-            std::vector<size_type> res((1ULL<<k), 0);
             const auto &wm = bwt_tgt.get_wm();
             std::queue<nr_type> nodes;
             nodes.emplace(nr_type{wm.root(), {I.left(), I.right()}});
@@ -702,12 +702,12 @@ namespace ring {
                     res[i++] = v.node.size;
                 }
             }
-            return res;
         }
 
         template<class BWT_SRC, class BWT_TGT>
-        std::vector<size_type> aprox_intersect_fwd(const size_type k, const value_type src_value,
-                                                   const BWT_SRC &bwt_src, const BWT_TGT &bwt_tgt){
+        void aprox_intersect_fwd(const size_type k, const value_type src_value,
+                                                   const BWT_SRC &bwt_src, const BWT_TGT &bwt_tgt,
+                                                   std::vector<size_type> &res){
 
             //If fwd from S to P -> bwt_src: bwt_s, and bwt_tgt: bwt_p
             //If fwd from P to O -> bwt_src: bwt_p and bwt_tgt: bwt_o
@@ -718,7 +718,6 @@ namespace ring {
             range_type left_range, right_range;
             size_type rnk, p_rnk = 0, i = 0;
 
-            std::vector<size_type> res((1ULL<<k), 0);
             const auto &wm = bwt_tgt.get_wm();
             //(1) Traversing the wm to get the size of each partition in L_P
             std::queue<node_type> nodes;
@@ -743,31 +742,42 @@ namespace ring {
                 p_rnk = rnk;
                 l = r+1;
             }
-            return res;
         }
 
         inline std::vector<size_type> ai_bwd_S(const size_type k, const bwt_interval &I){
-            return aprox_intersect_bwd(k, I, m_bwt_s);
+            std::vector<size_type> res(1ULL << k);
+            aprox_intersect_bwd(k, I, m_bwt_s, res);
+            return res;
         }
 
         inline std::vector<size_type> ai_bwd_P(const size_type k, const bwt_interval &I){
-            return aprox_intersect_bwd(k, I, m_bwt_p);
+            std::vector<size_type> res(1ULL << k);
+            aprox_intersect_bwd(k, I, m_bwt_p, res);
+            return res;
         }
 
         inline std::vector<size_type> ai_bwd_O(const size_type k, const bwt_interval &I){
-            return aprox_intersect_bwd(k, I, m_bwt_o);
+            std::vector<size_type> res(1ULL << k);
+            aprox_intersect_bwd(k, I, m_bwt_o, res);
+            return res;
         }
 
         inline std::vector<size_type> ai_fwd_S(const size_type k, const value_type src_value){
-            return aprox_intersect_fwd(k, src_value, m_bwt_o, m_bwt_s);
+            std::vector<size_type> res(1ULL << k);
+            aprox_intersect_fwd(k, src_value, m_bwt_o, m_bwt_s, res);
+            return res;
         }
 
         inline std::vector<size_type> ai_fwd_P(const size_type k, const value_type src_value){
-            return aprox_intersect_fwd(k, src_value, m_bwt_s, m_bwt_p);
+            std::vector<size_type> res(1ULL << k);
+            aprox_intersect_fwd(k, src_value, m_bwt_s, m_bwt_p, res);
+            return res;
         }
 
         inline std::vector<size_type> ai_fwd_O(const size_type k, const value_type src_value){
-            return aprox_intersect_fwd(k, src_value, m_bwt_p, m_bwt_o);
+            std::vector<size_type> res(1ULL << k);
+            aprox_intersect_fwd(k, src_value, m_bwt_p, m_bwt_o, res);
+            return res;
         }
 
     };

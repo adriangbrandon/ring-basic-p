@@ -159,6 +159,8 @@ namespace ring {
                          const std::vector<ltj_iter_type> *iterators,
                          const var_to_iterators_type *var_iterators,
                          ring_type *r) {
+
+                auto t1 = std::chrono::high_resolution_clock::now();
                 m_ptr_triple_patterns = triple_patterns;
                 m_ptr_iterators = iterators;
                 m_ptr_var_iterators = var_iterators;
@@ -199,6 +201,9 @@ namespace ring {
                     ++i;
                 }
                 m_index = 0;
+                auto t2 = std::chrono::high_resolution_clock::now();
+                auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count();
+                std::cout << "Time init VEO: " << time << std::endl;
                 /*for(const auto & v : m_var_info){
                     std::cout << "var=" << (uint64_t) v.name << " weight=" << v.weight << std::endl;
                 }*/
@@ -311,17 +316,15 @@ namespace ring {
                                 }
                                 if(!i){
                                     min_wp = wp;
-                                    min_w = 0;
-                                    for(size_type j = 0; j < wp.size(); ++j){
-                                        min_w += min_wp[j];
-                                    }
                                 }else{
-                                    min_w = 0;
                                     for(size_type j = 0; j < wp.size(); ++j){
                                         min_wp[j] = std::min(wp[j], min_wp[j]);
-                                        min_w += min_wp[j];
                                     }
                                 }
+                            }
+                            min_w = 0;
+                            for(size_type j = 0; j < min_wp.size(); ++j){
+                                min_w += min_wp[j];
                             }
                             update_type update{pos,  m_var_info[pos].weight};
                             version.emplace_back(update);  //Store an update
