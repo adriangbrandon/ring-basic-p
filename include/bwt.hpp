@@ -121,6 +121,15 @@ namespace ring {
             sdsl::util::swap_support(m_C_select0, o.m_C_select0, &m_C, &o.m_C);
         }
 
+        void print_size(){
+            size_type size_A = sdsl::size_in_bytes(m_L);
+            size_type size_C = sdsl::size_in_bytes(m_C) + sdsl::size_in_bytes(m_C_rank) +
+                    sdsl::size_in_bytes(m_C_select1) + sdsl::size_in_bytes(m_C_select0);
+
+            std::cout << "A (bytes) : " << size_A << std::endl;
+            std::cout << "C (bytes) : " << size_C << std::endl;
+        }
+
 
         //! Serializes the data structure into the given ostream
         size_type serialize(std::ostream &out, sdsl::structure_tree_node *v = nullptr, std::string name = "") const {
@@ -167,7 +176,7 @@ namespace ring {
         }
 
 
-        inline uint64_t ranky(uint64_t pos, uint64_t val) {
+        inline uint64_t ranky(uint64_t pos, uint64_t val) const {
             return m_L.rank(pos, val);
         }
 

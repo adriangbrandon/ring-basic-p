@@ -5,7 +5,7 @@ import sys
 
 
 
-plt.rcParams.update({'font.size': 18})
+plt.rcParams.update({'font.size': 20})
 
 plt.rcParams['mathtext.fontset'] = 'custom'
 plt.rcParams['mathtext.rm'] = 'Bitstream Vera Sans'
@@ -50,7 +50,7 @@ names = [ 'RingR', 'RingRNL', 'RingRE', 'VRing', 'Ring', 'RingB']
 
 
 
-fig, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
+fig, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(10, 4))
 #fig, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(8, 6))
 
 # rectangular box plot

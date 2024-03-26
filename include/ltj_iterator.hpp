@@ -68,6 +68,7 @@ namespace ring {
         //const bool &is_empty = m_is_empty;
         const size_type& level = m_level;
         const std::array<state_type, 3>& state = m_state;
+        const std::array<value_type, 3>& consts = m_consts;
 
         ltj_iterator() = default;
 

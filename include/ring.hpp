@@ -23,6 +23,7 @@
 #include <cstdint>
 #include "bwt.hpp"
 #include "bwt_interval.hpp"
+#include <queue>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,6 +38,7 @@ namespace ring {
         typedef bwt_so_t bwt_type;
         typedef bwt_p_t bwt_p_type;
         typedef std::tuple<uint32_t, uint32_t, uint32_t> spo_triple_type;
+
 
     private:
         bwt_type m_bwt_s; //POS
@@ -101,11 +103,8 @@ namespace ring {
             M_S.resize(alphabet_SO+1, 0);
             M_S.shrink_to_fit();
 
-            for (it = triple_begin, i=0; i<n; i++, it++){
-                //assert(M_S.size() > std::get<0>(*it));
+            for (it = triple_begin, i=0; i<n; i++, it++)
                 M_S[std::get<0>(*it)]++;
-            }
-
 
             // Sorts the triples lexycographically
             sort(triple_begin, triple_end);
@@ -118,7 +117,6 @@ namespace ring {
                 new_C_O.push_back(0); // Dummy value
                 new_C_O.push_back(cur_pos);
                 for (c = 2; c <= alphabet_SO; c++) {
-                    //assert(c-1 < M_S.size());
                     cur_pos += M_S[c-1];
                     new_C_O.push_back(cur_pos);
                 }
@@ -130,10 +128,8 @@ namespace ring {
 
                 int_vector<> new_O(n+1);
                 new_O[0] = 0;
-                for (i=1; i<=n; i++) {
-                    //assert(i - 1 < D.size());
-                    new_O[i] = std::get<2>(D[i - 1]);
-                }
+                for (i=1; i<=n; i++)
+                    new_O[i] = std::get<2>(D[i-1]);
 
                 util::bit_compress(new_O);
                 // builds the WT for BWT(O)
@@ -143,10 +139,8 @@ namespace ring {
             M_O.resize(alphabet_SO+1, 0);
             M_O.shrink_to_fit();
 
-            for (it = triple_begin, i=0; i<n; i++, it++) {
-                //assert(std::get<2>(*it) < M_O.size());
+            for (it = triple_begin, i=0; i<n; i++, it++)
                 M_O[std::get<2>(*it)]++;
-            }
 
             stable_sort(D.begin(), D.end(), [](const spo_triple& a,
                     const spo_triple& b) {return std::get<2>(a) < std::get<2>(b);});
@@ -158,7 +152,6 @@ namespace ring {
                 new_C_P.push_back(0);  // Dummy value
                 new_C_P.push_back(cur_pos);
                 for (c = 2; c <= alphabet_SO; c++) {
-                    //assert(c-1 < M_O.size());
                     cur_pos += M_O[c-1];
                     new_C_P.push_back(cur_pos);
                 }
@@ -169,9 +162,8 @@ namespace ring {
 
                 int_vector<> new_P(n+1);
                 new_P[0] = 0;
-                for (i=1; i<=n; i++) {
-                    new_P[i] = std::get<1>(D[i - 1]);
-                }
+                for (i=1; i<=n; i++)
+                    new_P[i] = std::get<1>(D[i-1]);
 
                 util::bit_compress(new_P);
                 m_bwt_p = bwt_p_type(new_P, new_C_P);
@@ -180,10 +172,8 @@ namespace ring {
             M_P.resize(m_max_p+1, 0);
             M_P.shrink_to_fit();
 
-            for (it = triple_begin, i=0; i<n; i++, it++) {
-                //assert(std::get<1>(*it) < M_P.size());
+            for (it = triple_begin, i=0; i<n; i++, it++)
                 M_P[std::get<1>(*it)]++;
-            }
 
             stable_sort(D.begin(), D.end(), [](const spo_triple& a,
                     const spo_triple& b) {return std::get<1>(a) < std::get<1>(b); });
@@ -196,7 +186,6 @@ namespace ring {
                 new_C_S.push_back(0);  // Dummy value
                 new_C_S.push_back(cur_pos);
                 for (c = 2; c <= m_max_p; c++) {
-                    //assert(c-1 < M_P.size());
                     cur_pos += M_P[c-1];
                     new_C_S.push_back(cur_pos);
                 }
@@ -284,6 +273,12 @@ namespace ring {
             sdsl::read_member(m_max_p, in);
             sdsl::read_member(m_max_o, in);
             sdsl::read_member(m_n_triples, in);
+            std::cout << "--- SPO ---" << std::endl;
+            m_bwt_o.print_size();
+            std::cout << "--- OSP ---" << std::endl;
+            m_bwt_p.print_size();
+            std::cout << "--- POS ---" << std::endl;
+            m_bwt_s.print_size();
         }
 
 
@@ -676,6 +671,103 @@ namespace ring {
 
         bool there_are_P_in_OS(bwt_interval &I) {
             return I.get_cur_value() != I.end();
+        }
+
+        /**********************************/
+
+        template<class BWT>
+        std::vector<size_type> aprox_intersect_bwd(const size_type k, const bwt_interval &I,  const BWT &bwt_tgt){
+
+            typedef typename BWT::wm_type::node_type node_type;
+            typedef struct {
+                node_type node;
+                range_type range;
+            } nr_type;
+
+            nr_type v;
+            range_type left_range, right_range;
+            size_type rnk = 0, i = 0;
+
+            std::vector<size_type> res((1ULL<<k), 0);
+            const auto &wm = bwt_tgt.get_wm();
+            std::queue<nr_type> nodes;
+            nodes.emplace(nr_type{wm.root(), {I.left(), I.right()}});
+            while(!nodes.empty()) {
+                v = nodes.front(); nodes.pop();
+                if(v.node.level < k){
+                    auto children = wm.my_expand(v.node, v.range, left_range, right_range, rnk);
+                    nodes.emplace(nr_type{children[0], left_range});
+                    nodes.emplace(nr_type{children[1], right_range});
+                }else{
+                    res[i++] = v.node.size;
+                }
+            }
+            return res;
+        }
+
+        template<class BWT_SRC, class BWT_TGT>
+        std::vector<size_type> aprox_intersect_fwd(const size_type k, const value_type src_value,
+                                                   const BWT_SRC &bwt_src, const BWT_TGT &bwt_tgt){
+
+            //If fwd from S to P -> bwt_src: bwt_s, and bwt_tgt: bwt_p
+            //If fwd from P to O -> bwt_src: bwt_p and bwt_tgt: bwt_o
+            //If fwd from O to S -> bwt_src: bwt_o and bwt_tgt: bwt_s
+
+            typedef typename BWT_TGT::wm_type::node_type node_type;
+            node_type v;
+            range_type left_range, right_range;
+            size_type rnk, p_rnk = 0, i = 0;
+
+            std::vector<size_type> res((1ULL<<k), 0);
+            const auto &wm = bwt_tgt.get_wm();
+            //(1) Traversing the wm to get the size of each partition in L_P
+            std::queue<node_type> nodes;
+            nodes.emplace(wm.root());
+            while(!nodes.empty()) {
+                v = nodes.front(); nodes.pop();
+                if(v.level < k){
+                    auto children = wm.expand(v);
+                    nodes.emplace(children[0]);
+                    nodes.emplace(children[1]);
+                }else{
+                    res[i++] = v.size;
+                }
+            }
+
+            //(2) Mapping to the range of S in L_O
+            size_type r, l=1;
+            for(i = 0; i < res.size(); ++i){
+                r = res[i]+l;
+                rnk = bwt_src.ranky(r, src_value);
+                res[i] = rnk - p_rnk;
+                p_rnk = rnk;
+                l = r+1;
+            }
+            return res;
+        }
+
+        inline std::vector<size_type> ai_bwd_S(const size_type k, const bwt_interval &I){
+            return aprox_intersect_bwd(k, I, m_bwt_s);
+        }
+
+        inline std::vector<size_type> ai_bwd_P(const size_type k, const bwt_interval &I){
+            return aprox_intersect_bwd(k, I, m_bwt_p);
+        }
+
+        inline std::vector<size_type> ai_bwd_O(const size_type k, const bwt_interval &I){
+            return aprox_intersect_bwd(k, I, m_bwt_o);
+        }
+
+        inline std::vector<size_type> ai_fwd_S(const size_type k, const value_type src_value){
+            return aprox_intersect_fwd(k, src_value, m_bwt_o, m_bwt_s);
+        }
+
+        inline std::vector<size_type> ai_fwd_P(const size_type k, const value_type src_value){
+            return aprox_intersect_fwd(k, src_value, m_bwt_s, m_bwt_p);
+        }
+
+        inline std::vector<size_type> ai_fwd_O(const size_type k, const value_type src_value){
+            return aprox_intersect_fwd(k, src_value, m_bwt_p, m_bwt_o);
         }
 
     };

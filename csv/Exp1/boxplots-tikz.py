@@ -7,7 +7,7 @@ import tikzplotlib
 
 #plt.style.use("ggplot")
 
-plt.rcParams.update({'font.size': 18})
+plt.rcParams.update({'font.size': 20})
 
 plt.rcParams['mathtext.fontset'] = 'custom'
 plt.rcParams['mathtext.rm'] = 'Bitstream Vera Sans'
@@ -80,7 +80,8 @@ df_data['CompactLTJ-star'] = df_cltj_star['time'].div( 1000000.0)
 names = ['Ring-large', 'Ring-small', 'RDFCSA-large', 'RDFCSA-small', 'CompactLTJ*']
 bpt = [11.7, 12.4, 6.9, 7.6,  24.3, 25, 15.6, 16.3, 41.3]
 
-fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1, figsize=(10, 16))
+#fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1, figsize=(10, 16))
+fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1, figsize=(10, 13))
 
 # rectangular box plot
 bplot1 = ax1.boxplot(df_data,
@@ -88,7 +89,8 @@ bplot1 = ax1.boxplot(df_data,
                      patch_artist=True,  # fill with color
                      positions = bpt,
                      showfliers=False)  # will be used to label x-ticks
-ax1.set_title('Type I', weight='bold')
+#ax1.set_title('Type I', weight='bold')
+ax1.set_title('Type I',weight='bold', y=1.0, pad=-25)
 
 legend_order = ['Ring-s', 'Ring-l', 'RDFCSA-s', 'RDFCSA-l', 'VRing-s', 'VRing-l', 'CompactLTJ*']
 
@@ -143,19 +145,19 @@ for bplot in bplot1['caps']:
  			#xlabel = bpt[i // 2]-5.1
  			#ax3.text(xlabel, 1053,
  	        #    '{:d}'.format(captop), va='center', weight='bold')
- 			xlabel = bpt[i // 2]-0.8
- 			ax1.text(xlabel, 29,
+ 			xlabel = bpt[i // 2]-1.1
+ 			ax1.text(xlabel, 27,
  	            '{:d}'.format(captop), va='center', rotation=90)
  		else:
  			xlabel = bpt[i // 2]+0.1
- 			ax1.text(xlabel, 29,
+ 			ax1.text(xlabel, 27,
  	            '{:d}'.format(captop), va='center', rotation=90)
 	i = i + 1
 
 #fig = df_data.boxplot(positions=bpt, grid=False, return_type='axes')
 #fig.plot()
 #plt.suptitle(title)
-ax1.set_xticks(np.arange(6, 43, step=2), np.arange(6, 43, step=2))
+ax1.set_xticks(np.arange(5, 43, step=2), np.arange(5, 43, step=2))
 ax1.set_ylim(top=30)
 ax1.set_ylim(bottom=-0.2)
 #ax1.set_ylim(bottom=-0.2)
@@ -220,7 +222,7 @@ bplot2 = ax2.boxplot(df_data,
                      patch_artist=True,  # fill with color
                      positions = bpt,
                      showfliers=False)  # will be used to label x-ticks
-ax2.set_title('Type II', weight='bold')
+ax2.set_title('Type II',weight='bold', y=1.0, pad=-25)
 
 i = 0
 for bplot in bplot2['boxes']:
@@ -267,19 +269,19 @@ for bplot in bplot2['caps']:
  			#xlabel = bpt[i // 2]-5.1
  			#ax3.text(xlabel, 1053,
  	        #    '{:d}'.format(captop), va='center', weight='bold')
- 			xlabel = bpt[i // 2]-0.8
- 			ax2.text(xlabel, 66,
+ 			xlabel = bpt[i // 2]-1.1
+ 			ax2.text(xlabel, 63,
  	            '{:d}'.format(captop), va='center', rotation=90)
  		else:
  			xlabel = bpt[i // 2]+0.1
- 			ax2.text(xlabel, 66,
+ 			ax2.text(xlabel, 63,
  	            '{:d}'.format(captop), va='center', rotation=90)
 	i = i + 1
 
 #fig = df_data.boxplot(positions=bpt, grid=False, return_type='axes')
 #fig.plot()
 #plt.suptitle(title)
-ax2.set_xticks(np.arange(6, 43, step=2), np.arange(6, 43, step=2))
+ax2.set_xticks(np.arange(5, 43, step=2), np.arange(6, 43, step=2))
 #ax1.set_ylim(top=150)
 ax2.set_ylim(top=70)
 ax2.set_ylim(bottom=-1)
@@ -367,7 +369,7 @@ bplot3 = ax3.boxplot(df_data,
                      patch_artist=True,  # fill with color
                      positions = bpt,
                      showfliers=False)  # will be used to label x-ticks
-ax3.set_title('Type III', weight='bold')
+ax3.set_title('Type III',weight='bold', y=1.0, pad=-25)
 
 i = 0
 for bplot in bplot3['boxes']:
@@ -415,19 +417,19 @@ for bplot in bplot3['caps']:
  			#ax3.text(xlabel, 1053,
  	        #    '{:d}'.format(captop), va='center', weight='bold')
  			xlabel = bpt[i // 2]-1.1
- 			ax3.text(xlabel, 1060,
+ 			ax3.text(xlabel, 860,
  	            '{:d}'.format(captop), va='center', rotation=90)
  		else:
  			xlabel = bpt[i // 2]+0.1
- 			ax3.text(xlabel, 1060,
+ 			ax3.text(xlabel, 860,
  	            '{:d}'.format(captop), va='center', rotation=90)
 	i = i + 1
 
 
 
 #ax3.set_xticks(np.arange(6, 56, step=4), np.arange(6, 56, step=4))
-ax3.set_xticks(np.arange(6, 43, step=2), np.arange(6, 43, step=2))
-ax3.set_ylim(top=1150)
+ax3.set_xticks(np.arange(5, 43, step=2), np.arange(6, 43, step=2))
+ax3.set_ylim(top=1000)
 ax3.set_ylim(bottom=-10)
 #ax2[0].set_yscale('symlog')
 #ax1.set_yscale('log')

@@ -179,6 +179,60 @@ namespace ring {
 
         };
 
+        template <uint64_t k=1>
+        struct trait_intersect {
+
+            template<class Iterator, class Ring>
+            static std::vector<uint64_t> get(Ring* ptr_ring, Iterator &iter, state_type state){
+                if(state == s){
+                    if(iter.level == 1 && iter.state[0] == o){
+                        return ptr_ring->ai_fwd_S(k, iter.consts[0]);
+                    }else{
+                        return ptr_ring->ai_bwd_S(k, iter.interval());
+                    }
+                }else if (state == p){
+                    if(iter.level == 1 && iter.state[0] == s){
+                        return ptr_ring->ai_fwd_P(k, iter.consts[0]);
+                    }else{
+                        return ptr_ring->ai_bwd_P(k, iter.interval());
+                    }
+                }else{
+                    if(iter.level == 1 && iter.state[0] == p){
+                        return ptr_ring->ai_fwd_O(k, iter.consts[0]);
+                    }else{
+                        return ptr_ring->ai_bwd_O(k, iter.interval());
+                    }
+                };
+            }
+
+            template<class Iterator, class Ring>
+            static std::vector<uint64_t> subject(Ring* ptr_ring, Iterator &iter){
+                if(iter.level == 1 && iter.state[0] == o){
+                    return ptr_ring->ai_fwd_S(k, iter.consts[0]);
+                }else{
+                    return ptr_ring->ai_bwd_S(k, iter.interval());
+                }
+            }
+
+            template<class Iterator, class Ring>
+            static std::vector<uint64_t> predicate(Ring* ptr_ring, Iterator &iter){
+                if(iter.level == 1 && iter.state[0] == s){
+                    return ptr_ring->ai_fwd_P(k, iter.consts[0]);
+                }else{
+                    return ptr_ring->ai_bwd_P(k, iter.interval());
+                }
+            }
+
+            template<class Iterator, class Ring>
+            static std::vector<uint64_t> object(Ring* ptr_ring, Iterator &iter){
+                if(iter.level == 1 && iter.state[0] == p){
+                    return ptr_ring->ai_fwd_O(k, iter.consts[0]);
+                }else{
+                    return ptr_ring->ai_bwd_O(k, iter.interval());
+                }
+            }
+        };
+
         struct trait_distinct_uni {
 
             template<class Iterator, class Ring>

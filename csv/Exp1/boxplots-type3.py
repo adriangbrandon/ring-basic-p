@@ -5,7 +5,7 @@ import sys
 
 
 
-plt.rcParams.update({'font.size': 18})
+plt.rcParams.update({'font.size': 20})
 
 plt.rcParams['mathtext.fontset'] = 'custom'
 plt.rcParams['mathtext.rm'] = 'Bitstream Vera Sans'
@@ -45,7 +45,7 @@ names = ['Ring-large', 'VRing-large', 'VEO-R', 'VEO-RL', 'VEO-RLW', 'VEO-Best']
 
 
 
-fig, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(10, 16))
+fig, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(10, 13))
 
 # rectangular box plot
 bplot1 = ax1.boxplot(df_data,

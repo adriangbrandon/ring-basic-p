@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 2.8.7)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
 include(AppendCompilerFlags)
-set(CMAKE_OSX_ARCHITECTURES x86_64)
+set(CMAKE_OSX_ARCHITECTURES "x86_64")
 
 project(Ring)
 set(CMAKE_PROJECT_NAME "Ring")
 
 #Change to "Debug" when you need it
-set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE "Release")
 
 # C++11 compiler Check
 if(NOT CMAKE_CXX_COMPILER_VERSION) # work around for cmake versions smaller than 2.8.10
@@ -76,6 +76,8 @@ add_executable(query-index-uring-fixed src/query-index-uring.cpp)
 target_compile_definitions(query-index-uring-fixed PUBLIC ADAPTIVE=0)
 target_link_libraries(query-index-uring-fixed sdsl divsufsort divsufsort64)
 
+add_executable(query-index-veo-intersection src/query-index-veo-intersection.cpp)
+target_link_libraries(query-index-veo-intersection sdsl divsufsort divsufsort64)
 
 add_executable(check src/check.cpp)
 target_link_libraries(check sdsl divsufsort divsufsort64)
