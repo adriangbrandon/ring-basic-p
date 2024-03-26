@@ -699,9 +699,10 @@ namespace ring {
                     nodes.emplace(nr_type{children[0], left_range});
                     nodes.emplace(nr_type{children[1], right_range});
                 }else{
-                    res[i++] = v.node.size;
+                    res[i++] = sdsl::size(v.range);
                 }
             }
+            //--res[0]; //removing the dummy 0 value
         }
 
         template<class BWT_SRC, class BWT_TGT>
@@ -734,13 +735,13 @@ namespace ring {
             }
 
             //(2) Mapping to the range of S in L_O
-            size_type r, l=1;
+            size_type r, l=0;
             for(i = 0; i < res.size(); ++i){
                 r = res[i]+l;
                 rnk = bwt_src.ranky(r, src_value);
                 res[i] = rnk - p_rnk;
                 p_rnk = rnk;
-                l = r+1;
+                l = r;
             }
         }
 

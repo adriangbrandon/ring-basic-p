@@ -160,7 +160,7 @@ namespace ring {
                          const var_to_iterators_type *var_iterators,
                          ring_type *r) {
 
-                auto t1 = std::chrono::high_resolution_clock::now();
+               // auto t1 = std::chrono::high_resolution_clock::now();
                 m_ptr_triple_patterns = triple_patterns;
                 m_ptr_iterators = iterators;
                 m_ptr_var_iterators = var_iterators;
@@ -201,13 +201,13 @@ namespace ring {
                     ++i;
                 }
                 m_index = 0;
-                auto t2 = std::chrono::high_resolution_clock::now();
+                /*auto t2 = std::chrono::high_resolution_clock::now();
                 auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count();
                 for(const auto & v : m_var_info){
                     std::cout << "var=" << (uint64_t) v.name << " weight=" << v.weight << std::endl;
                 }
                 std::cout << "Done. " << std::endl;
-                std::cout << "Time init VEO: " << time << std::endl;
+                std::cout << "Time init VEO: " << time << std::endl;*/
 
             }
 
