@@ -95,6 +95,30 @@ namespace ring {
 
         };
 
+        struct trait_probability {
+
+            template<class Iterator, class Ring>
+            static double get(Ring* ptr_ring, Iterator &iter, state_type state){
+                return iter.interval_length() / (double) ptr_ring->n_triples;
+            }
+
+            template<class Iterator, class Ring>
+            static double subject(Ring* ptr_ring, Iterator &iter){
+                return iter.interval_length() / (double) ptr_ring->n_triples;
+            }
+
+            template<class Iterator, class Ring>
+            static double predicate(Ring* ptr_ring, Iterator &iter){
+                return iter.interval_length() / (double) ptr_ring->n_triples;
+            }
+
+            template<class Iterator, class Ring>
+            static double object(Ring* ptr_ring, Iterator &iter){
+                return iter.interval_length() / (double) ptr_ring->n_triples;
+            }
+
+        };
+
         struct trait_distinct {
 
             template<class Iterator, class Ring>
@@ -339,6 +363,31 @@ namespace ring {
                 }
             }
 
+        };
+
+        struct op_minimum {
+
+            typedef uint64_t weight_type;
+
+            static inline void init(weight_type &weight, weight_type value){
+                weight = value;
+            }
+
+            static inline void add(weight_type &weight, weight_type value){
+                if(value < weight) weight = value;
+            }
+        };
+
+        struct op_product {
+            typedef double weight_type;
+
+            static inline void init(weight_type &weight, weight_type value){
+                weight = value;
+            }
+
+            static inline void add(weight_type &weight, weight_type value){
+                weight *= value;
+            }
         };
     }
 

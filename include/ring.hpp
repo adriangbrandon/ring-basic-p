@@ -65,6 +65,7 @@ namespace ring {
         const bwt_type &s_spo = m_bwt_s; //POS
         const bwt_p_type &p_spo = m_bwt_p; //OSP
         const bwt_type &o_spo = m_bwt_o; //SPO
+        const size_type &n_triples = m_n_triples; //SPO
 
         const size_type& max_s = m_max_s;
         const size_type& max_p = m_max_p;
@@ -706,7 +707,7 @@ namespace ring {
         }
 
         template<class BWT_SRC, class BWT_TGT>
-        void aprox_intersect_fwd(const size_type k, const value_type src_value,
+        inline void aprox_intersect_fwd(const size_type k, const value_type src_value,
                                                    const BWT_SRC &bwt_src, const BWT_TGT &bwt_tgt,
                                                    std::vector<size_type> &res){
 

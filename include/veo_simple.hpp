@@ -36,17 +36,18 @@ namespace ring {
 
 
         template<class ltj_iterator_t = ltj_iterator <ring<>, uint8_t, uint64_t>,
-                class veo_trait_t = util::trait_size>
+                 class veo_trait_t = util::trait_size, class operator_t = util::op_minimum>
         class veo_simple {
 
         public:
             typedef ltj_iterator_t ltj_iter_type;
             typedef typename ltj_iter_type::var_type var_type;
             typedef uint64_t size_type;
+            typedef typename operator_t::weight_type weight_type;
             typedef typename ltj_iter_type::ring_type ring_type;
             typedef struct {
                 var_type name;
-                size_type weight;
+                weight_type weight;
                 size_type n_triples;
                 std::unordered_set<var_type> related;
             } info_var_type;
@@ -74,7 +75,8 @@ namespace ring {
             }
 
 
-            void var_to_vector(const var_type var, const size_type size,
+            template<class Value>
+            void var_to_vector(const var_type var, const Value size,
                                std::unordered_map<var_type, size_type> &hash_table,
                                std::vector<info_var_type> &vec) {
 
@@ -82,16 +84,18 @@ namespace ring {
                 if (it == hash_table.end()) {
                     info_var_type info;
                     info.name = var;
-                    info.weight = size;
+                    //info.weight = size;
+                    operator_t::init(info.weight, size);
                     info.n_triples = 1;
                     vec.emplace_back(info);
                     hash_table.insert({var, vec.size() - 1});
                 } else {
                     info_var_type &info = vec[it->second];
                     ++info.n_triples;
-                    if (info.weight > size) {
+                    operator_t::add(info.weight, size);
+                    /*if (info.weight > size) {
                         info.weight = size;
-                    }
+                    }*/
                 }
             }
 

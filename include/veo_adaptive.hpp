@@ -36,7 +36,7 @@ namespace ring {
 
 
         template<class ltj_iterator_t = ltj_iterator <ring<>, uint8_t, uint64_t>,
-                class veo_trait_t = util::trait_size>
+                class veo_trait_t = util::trait_size, class operator_t = util::op_minimum>
         class veo_adaptive {
 
         public:
@@ -44,6 +44,7 @@ namespace ring {
             typedef typename ltj_iter_type::var_type var_type;
             typedef uint64_t size_type;
             typedef typename ltj_iter_type::ring_type ring_type;
+            typedef typename operator_t::weight_type weight_type;
 
 
             /*enum spo_type {subject, predicate, object};
@@ -54,7 +55,7 @@ namespace ring {
 
             typedef struct {
                 var_type name;
-                size_type weight;
+                weight_type weight;
                 size_type pos;
                 //std::vector<spo_iter_type> iterators;
                 std::unordered_set<var_type> related;
@@ -66,7 +67,7 @@ namespace ring {
 
             typedef struct {
                 size_type pos;
-                size_type w;
+                weight_type w;
             } update_type;
 
 
@@ -119,7 +120,7 @@ namespace ring {
                     if (it == m_hash_table_position.end()) {
                         info_var_type info;
                         info.name = var;
-                        info.weight = veo_trait_type::get(m_ptr_ring, m_ptr_iterators->at(i), state);
+                        operator_t::init(info.weight, veo_trait_type::get(m_ptr_ring, m_ptr_iterators->at(i), state));
                         info.is_bound = false;
                         info.pos = m_var_info.size();
                         m_var_info.emplace_back(info);
@@ -128,9 +129,7 @@ namespace ring {
                     } else {
                         auto size = veo_trait_type::get(m_ptr_ring, m_ptr_iterators->at(i), state);
                         info_var_type &info = m_var_info[it->second];
-                        if (info.weight > size) {
-                            info.weight = size;
-                        }
+                        operator_t::add(info.weight, size);
                     }
                     return true;
                 }
@@ -253,7 +252,7 @@ namespace ring {
             inline var_type next() {
 
                 if(m_index < m_var_info.size()){ //No lonely
-                    size_type min = -1ULL;
+                    auto min = std::numeric_limits<weight_type>::max();
                     list_iterator_type min_iter;
                     // Lineal search on variables that are not is_bound
                     for(auto iter = m_not_bound.begin(); iter != m_not_bound.end(); ++iter){
@@ -291,27 +290,29 @@ namespace ring {
                     for(const auto &rel : related){ //Iterates on the related variables
                         const auto pos = m_hash_table_position[rel];
                         if(!m_var_info[pos].is_bound){
-                            bool u = false;
-                            size_type min_w = m_var_info[pos].weight, w;
+                            weight_type init_w = m_var_info[pos].weight, w_i, w;
                             auto &iters = m_ptr_var_iterators->at(rel);
+                            uint i = 0;
                             for(ltj_iter_type* iter : iters){ //Check each iterator
                                 if(iter->is_variable_subject(rel)){
-                                    w = veo_trait_type::subject(m_ptr_ring, *iter); //New weight
+                                    w_i = veo_trait_type::subject(m_ptr_ring, *iter); //New weight
                                 }else if (iter->is_variable_predicate(rel)){
-                                    w = veo_trait_type::predicate(m_ptr_ring, *iter);
+                                    w_i = veo_trait_type::predicate(m_ptr_ring, *iter);
                                 }else{
-                                    w = veo_trait_type::object(m_ptr_ring, *iter);
+                                    w_i = veo_trait_type::object(m_ptr_ring, *iter);
                                 }
-                                if(min_w > w) {
-                                    min_w = w;
-                                    u = true;
+                                if(!i){
+                                    operator_t::init(w, w_i);
+                                }else{
+                                    operator_t::add(w, w_i);
                                 }
+                                ++i;
                             }
 
-                            if(u){
-                                update_type update{pos,  m_var_info[pos].weight};
+                            if(w < init_w){
+                                update_type update{pos,  init_w};
                                 version.emplace_back(update);  //Store an update
-                                m_var_info[pos].weight = min_w;
+                                m_var_info[pos].weight = w;
                             }
                         }
                     }

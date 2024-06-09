@@ -79,6 +79,14 @@ target_link_libraries(query-index-uring-fixed sdsl divsufsort divsufsort64)
 add_executable(query-index-veo-intersection src/query-index-veo-intersection.cpp)
 target_link_libraries(query-index-veo-intersection sdsl divsufsort divsufsort64)
 
+add_executable(query-index-veo-probability src/query-index-veo-probability.cpp)
+target_compile_definitions(query-index-veo-probability PUBLIC ADAPTIVE=1)
+target_link_libraries(query-index-veo-probability sdsl divsufsort divsufsort64)
+
+add_executable(query-index-veo-probability-fixed src/query-index-veo-probability.cpp)
+target_compile_definitions(query-index-veo-probability-fixed PUBLIC ADAPTIVE=0)
+target_link_libraries(query-index-veo-probability-fixed sdsl divsufsort divsufsort64)
+
 add_executable(check src/check.cpp)
 target_link_libraries(check sdsl divsufsort divsufsort64)
 
