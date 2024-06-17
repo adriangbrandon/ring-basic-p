@@ -33,6 +33,7 @@
 #include <veo_random.hpp>
 #include <veo_random_lonely.hpp>
 #include <veo_adaptive_intersection.hpp>
+#include <veo_adaptive_probability.hpp>
 #include <results_collector.hpp>
 
 namespace ring {

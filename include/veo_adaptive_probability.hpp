@@ -18,8 +18,8 @@
  */
 
 
-#ifndef RING_VEO_ADAPTIVE_INTERSECTION_HPP
-#define RING_VEO_ADAPTIVE_INTERSECTION_HPP
+#ifndef RING_VEO_ADAPTIVE_PROBABILITY_HPP
+#define RING_VEO_ADAPTIVE_PROBABILITY_HPP
 
 #include <ring.hpp>
 #include <ltj_iterator.hpp>
@@ -37,7 +37,7 @@ namespace ring {
 
         template<class ltj_iterator_t = ltj_iterator <ring<>, uint8_t, uint64_t>,
                 class veo_trait_t = util::trait_intersect<3>>
-        class veo_adaptive_intersection {
+        class veo_adaptive_probability {
 
         public:
             typedef ltj_iterator_t ltj_iter_type;
@@ -54,9 +54,9 @@ namespace ring {
 
             typedef struct {
                 var_type name;
-                size_type weight;
+                double weight;
                 size_type pos;
-                std::vector<size_type> params_weight;
+                std::vector<double> params_weight;
                 std::unordered_set<var_type> related;
                 bool is_bound;
             } info_var_type;
@@ -66,7 +66,7 @@ namespace ring {
 
             typedef struct {
                 size_type pos;
-                size_type w;
+                double w;
             } update_type;
 
 
@@ -93,7 +93,7 @@ namespace ring {
 
 
 
-            void copy(const veo_adaptive_intersection &o) {
+            void copy(const veo_adaptive_probability &o) {
                 m_ptr_triple_patterns = o.m_ptr_triple_patterns;
                 m_ptr_iterators = o.m_ptr_iterators;
                 m_ptr_var_iterators = o.m_ptr_var_iterators;
@@ -119,10 +119,12 @@ namespace ring {
                     if (it == m_hash_table_position.end()) {
                         info_var_type info;
                         info.name = var;
-                        info.params_weight = veo_trait_type::get(m_ptr_ring, m_ptr_iterators->at(i), state);
+                        auto pw = veo_trait_type::get(m_ptr_ring, m_ptr_iterators->at(i), state);
+			info.params_weight.resize(pw.size());
                         info.weight = 0;
-                        for(const auto &p : info.params_weight){
-                            info.weight += p;
+                        for(size_type j = 0; j < pw.size(); ++j){
+                            info.params_weight[j] = pw[j] / (double) m_ptr_ring->n_triples;
+                            info.weight += info.params_weight[j];
                         }
                         info.is_bound = false;
                         info.pos = m_var_info.size();
@@ -134,7 +136,7 @@ namespace ring {
                         info_var_type &info = m_var_info[it->second];
                         info.weight = 0;
                         for(size_type j = 0; j <pw.size(); ++j){
-                            info.params_weight[j] = std::min(pw[j], info.params_weight[j]);
+                            info.params_weight[j] =  pw[j] * (info.params_weight[j] / (double) m_ptr_ring->n_triples);
                             info.weight += info.params_weight[j];
                         }
                     }
@@ -153,9 +155,9 @@ namespace ring {
 
         public:
 
-            veo_adaptive_intersection() = default;
+            veo_adaptive_probability() = default;
 
-            veo_adaptive_intersection(const std::vector<triple_pattern> *triple_patterns,
+            veo_adaptive_probability(const std::vector<triple_pattern> *triple_patterns,
                          const std::vector<ltj_iter_type> *iterators,
                          const var_to_iterators_type *var_iterators,
                          ring_type *r) {
@@ -212,17 +214,17 @@ namespace ring {
             }
 
             //! Copy constructor
-            veo_adaptive_intersection(const veo_adaptive_intersection &o) {
+            veo_adaptive_probability(const veo_adaptive_probability &o) {
                 copy(o);
             }
 
             //! Move constructor
-            veo_adaptive_intersection(veo_adaptive_intersection &&o) {
+            veo_adaptive_probability(veo_adaptive_probability &&o) {
                 *this = std::move(o);
             }
 
             //! Copy Operator=
-            veo_adaptive_intersection &operator=(const veo_adaptive_intersection &o) {
+            veo_adaptive_probability &operator=(const veo_adaptive_probability &o) {
                 if (this != &o) {
                     copy(o);
                 }
@@ -230,7 +232,7 @@ namespace ring {
             }
 
             //! Move Operator=
-            veo_adaptive_intersection &operator=(veo_adaptive_intersection &&o) {
+            veo_adaptive_probability &operator=(veo_adaptive_probability &&o) {
                 if (this != &o) {
                     m_ptr_triple_patterns = std::move(o.m_ptr_triple_patterns);
                     m_ptr_iterators = std::move(o.m_ptr_iterators);
@@ -247,7 +249,7 @@ namespace ring {
                 return *this;
             }
 
-            void swap(veo_adaptive_intersection &o) {
+            void swap(veo_adaptive_probability &o) {
                 std::swap(m_ptr_triple_patterns, o.m_ptr_triple_patterns);
                 std::swap(m_ptr_iterators, o.m_ptr_iterators);
                 std::swap(m_ptr_var_iterators, o.m_ptr_var_iterators);
@@ -292,18 +294,19 @@ namespace ring {
 
 
 
-            inline void down() {
+	inline void down() {
 
                 if(m_index-1 < m_var_info.size()){ //No lonely
 
                     auto pos_last = m_bound.top();
                     const auto &related = m_var_info[pos_last].related;
                     version_type version;
-                    std::vector<size_type> wp, min_wp;
+                    std::vector<size_type> wp;
                     for(const auto &rel : related){ //Iterates on the related variables
                         const auto pos = m_hash_table_position[rel];
                         if(!m_var_info[pos].is_bound){
                             size_type min_w;
+                            std::vector<double> min_wp;
                             auto &iters = m_ptr_var_iterators->at(rel);
                             for(size_type i = 0; i < iters.size(); ++i ){ //Check each iterator
                                 ltj_iter_type* iter = iters[i];
@@ -315,12 +318,16 @@ namespace ring {
                                     wp = veo_trait_type::object(m_ptr_ring, *iter);
                                 }
                                 if(!i){
-                                    min_wp = wp;
+                                    min_wp.resize(wp.size());  
+                                    for(size_type j = 0; j < wp.size(); ++j){
+                                        min_wp[j] = (wp[j]/ (double) m_ptr_ring->n_triples);
+                                    }
                                 }else{
                                     for(size_type j = 0; j < wp.size(); ++j){
-                                        min_wp[j] = std::min(wp[j], min_wp[j]);
+                                        min_wp[j] = (wp[j]/ (double) m_ptr_ring->n_triples) * min_wp[j];
                                     }
-                                }
+                                } 
+                                
                             }
                             min_w = 0;
                             for(size_type j = 0; j < min_wp.size(); ++j){
