@@ -29,6 +29,8 @@
 #include <vector>
 #include <utils.hpp>
 #include <unordered_set>
+#include <stack>
+#include <list>
 
 namespace ring {
 
@@ -120,7 +122,7 @@ namespace ring {
                         info_var_type info;
                         info.name = var;
                         auto pw = veo_trait_type::get(m_ptr_ring, m_ptr_iterators->at(i), state);
-			info.params_weight.resize(pw.size());
+			            info.params_weight.resize(pw.size());
                         info.weight = 0;
                         for(size_type j = 0; j < pw.size(); ++j){
                             info.params_weight[j] = pw[j] / (double) m_ptr_ring->n_triples;
@@ -305,7 +307,7 @@ namespace ring {
                     for(const auto &rel : related){ //Iterates on the related variables
                         const auto pos = m_hash_table_position[rel];
                         if(!m_var_info[pos].is_bound){
-                            size_type min_w;
+                            double min_w;
                             std::vector<double> min_wp;
                             auto &iters = m_ptr_var_iterators->at(rel);
                             for(size_type i = 0; i < iters.size(); ++i ){ //Check each iterator
