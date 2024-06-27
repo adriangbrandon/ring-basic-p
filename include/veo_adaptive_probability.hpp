@@ -268,7 +268,7 @@ namespace ring {
             inline var_type next() {
 
                 if(m_index < m_var_info.size()){ //No lonely
-                    size_type min = -1ULL;
+                    double min = std::numeric_limits<double>::max();
                     list_iterator_type min_iter;
                     // Lineal search on variables that are not is_bound
                     for(auto iter = m_not_bound.begin(); iter != m_not_bound.end(); ++iter){
