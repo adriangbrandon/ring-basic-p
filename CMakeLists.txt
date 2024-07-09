@@ -7,7 +7,7 @@ project(Ring)
 set(CMAKE_PROJECT_NAME "Ring")
 
 #Change to "Debug" when you need it
-set(CMAKE_BUILD_TYPE "Release")
+set(CMAKE_BUILD_TYPE "Debug")
 
 # C++11 compiler Check
 if(NOT CMAKE_CXX_COMPILER_VERSION) # work around for cmake versions smaller than 2.8.10
@@ -78,6 +78,9 @@ target_link_libraries(query-index-uring-fixed sdsl divsufsort divsufsort64)
 
 add_executable(query-index-veo-intersection src/query-index-veo-intersection.cpp)
 target_link_libraries(query-index-veo-intersection sdsl divsufsort divsufsort64)
+
+add_executable(query-index-uring-veo-intersection src/query-index-uring-veo-intersection.cpp)
+target_link_libraries(query-index-uring-veo-intersection sdsl divsufsort divsufsort64)
 
 add_executable(query-index-veo-prob-depth src/query-index-veo-prob-depth.cpp)
 target_link_libraries(query-index-veo-prob-depth sdsl divsufsort divsufsort64)

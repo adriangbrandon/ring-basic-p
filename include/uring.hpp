@@ -742,7 +742,78 @@ namespace ring {
             return I.get_cur_value() != I.end();
         }
 
+         /**********************************/
+
+        template<class BWT>
+        void aprox_intersect_bwd(const size_type k, const bwt_interval &I,  const BWT &bwt_tgt,
+                                 std::vector<size_type> &res){
+
+            typedef typename BWT::wm_type::node_type node_type;
+            typedef struct {
+                node_type node;
+                range_type range;
+            } nr_type;
+
+            nr_type v;
+            range_type left_range, right_range;
+            size_type rnk = 0, i = 0;
+
+            const auto &wm = bwt_tgt.get_wm();
+            std::queue<nr_type> nodes;
+            nodes.emplace(nr_type{wm.root(), {I.left(), I.right()}});
+            while(!nodes.empty()) {
+                v = nodes.front(); nodes.pop();
+                if(v.node.level < k){
+                    auto children = wm.my_expand(v.node, v.range, left_range, right_range, rnk);
+                    nodes.emplace(nr_type{children[0], left_range});
+                    nodes.emplace(nr_type{children[1], right_range});
+                }else{
+                    res[i++] = sdsl::size(v.range);
+                }
+            }
+            //--res[0]; //removing the dummy 0 value
+        }
+
+
+
+        inline std::vector<size_type> ai_bwd_S(const size_type k, const bwt_interval &I){
+            std::vector<size_type> res(1ULL << k);
+            aprox_intersect_bwd(k, I, m_bwt_s_spo, res);
+            return res;
+        }
+
+        inline std::vector<size_type> ai_bwd_P(const size_type k, const bwt_interval &I){
+            std::vector<size_type> res(1ULL << k);
+            aprox_intersect_bwd(k, I, m_bwt_p_spo, res);
+            return res;
+        }
+
+        inline std::vector<size_type> ai_bwd_O(const size_type k, const bwt_interval &I){
+            std::vector<size_type> res(1ULL << k);
+            aprox_intersect_bwd(k, I, m_bwt_o_spo, res);
+            return res;
+        }
+
+        inline std::vector<size_type> ai_fwd_S(const size_type k, const bwt_interval &I){
+            std::vector<size_type> res(1ULL << k);
+            aprox_intersect_bwd(k, I, m_bwt_s_ops, res);
+            return res;
+        }
+
+        inline std::vector<size_type> ai_fwd_P(const size_type k, const bwt_interval &I){
+            std::vector<size_type> res(1ULL << k);
+            aprox_intersect_bwd(k, I, m_bwt_p_ops, res);
+            return res;
+        }
+
+        inline std::vector<size_type> ai_fwd_O(const size_type k, const bwt_interval &I){
+            std::vector<size_type> res(1ULL << k);
+            aprox_intersect_bwd(k, I, m_bwt_o_ops, res);
+            return res;
+        }
+
     };
+
 
 
     typedef uring<bwt_rrr> c_uring;
