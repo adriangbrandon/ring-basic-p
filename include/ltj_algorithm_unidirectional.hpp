@@ -27,7 +27,9 @@
 #include <uring.hpp>
 #include <ltj_iterator_unidirectional.hpp>
 #include <veo_simple.hpp>
+#include <veo_simple_intersection.hpp>
 #include <veo_adaptive.hpp>
+#include <veo_adaptive_intersection.hpp>
 #include <wt_intersection_iterator.hpp>
 #include <results_collector.hpp>
 

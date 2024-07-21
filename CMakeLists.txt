@@ -77,10 +77,20 @@ target_compile_definitions(query-index-uring-fixed PUBLIC ADAPTIVE=0)
 target_link_libraries(query-index-uring-fixed sdsl divsufsort divsufsort64)
 
 add_executable(query-index-veo-intersection src/query-index-veo-intersection.cpp)
+target_compile_definitions(query-index-veo-intersection PUBLIC ADAPTIVE=1)
 target_link_libraries(query-index-veo-intersection sdsl divsufsort divsufsort64)
 
+add_executable(query-index-veo-intersection-fixed src/query-index-veo-intersection.cpp)
+target_compile_definitions(query-index-veo-intersection-fixed PUBLIC ADAPTIVE=0)
+target_link_libraries(query-index-veo-intersection-fixed sdsl divsufsort divsufsort64)
+
 add_executable(query-index-uring-veo-intersection src/query-index-uring-veo-intersection.cpp)
+target_compile_definitions(query-index-uring-veo-intersection PUBLIC ADAPTIVE=1)
 target_link_libraries(query-index-uring-veo-intersection sdsl divsufsort divsufsort64)
+
+add_executable(query-index-uring-veo-intersection-fixed src/query-index-uring-veo-intersection.cpp)
+target_compile_definitions(query-index-uring-veo-intersection-fixed PUBLIC ADAPTIVE=0)
+target_link_libraries(query-index-uring-veo-intersection-fixed sdsl divsufsort divsufsort64)
 
 add_executable(query-index-veo-prob-depth src/query-index-veo-prob-depth.cpp)
 target_link_libraries(query-index-veo-prob-depth sdsl divsufsort divsufsort64)

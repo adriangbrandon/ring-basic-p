@@ -26,7 +26,6 @@
 #include <ltj_algorithm_unidirectional.hpp>
 #include "utils.hpp"
 #include <time.hpp>
-#include <veo_adaptive_intersection.hpp>
 
 using namespace std;
 
@@ -171,6 +170,15 @@ void query(const std::string &file, const std::string &queries, uint64_t limit){
             typedef ring::ltj_algorithm_unidirectional<iterator_type,
                    ring::veo::veo_adaptive_intersection<iterator_type,
                     ring::util::trait_intersect_uni<3>>> algorithm_type;
+#if ADAPTIVE
+            typedef ring::ltj_algorithm_unidirectional<iterator_type,
+                    ring::veo::veo_adaptive_intersection<iterator_type,
+                     ring::util::trait_intersect_uni<3>>> algorithm_type;
+#else
+            typedef ring::ltj_algorithm_unidirectional<iterator_type,
+                   ring::veo::veo_simple_intersection<iterator_type,
+                    ring::util::trait_intersect_uni<3>>> algorithm_type;
+#endif
             typedef ::util::results_collector<typename algorithm_type::tuple_type> results_type;
             results_type res;
 
