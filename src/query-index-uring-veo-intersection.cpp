@@ -167,9 +167,6 @@ void query(const std::string &file, const std::string &queries, uint64_t limit){
             }
 
             typedef ring::ltj_iterator_unidirectional<ring_type, uint8_t, uint64_t> iterator_type;
-            typedef ring::ltj_algorithm_unidirectional<iterator_type,
-                   ring::veo::veo_adaptive_intersection<iterator_type,
-                    ring::util::trait_intersect_uni<3>>> algorithm_type;
 #if ADAPTIVE
             typedef ring::ltj_algorithm_unidirectional<iterator_type,
                     ring::veo::veo_adaptive_intersection<iterator_type,
