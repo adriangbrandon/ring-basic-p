@@ -18,10 +18,10 @@ make
 
 Check that there is no errors.
 
-2. Download the version of Wikidata that you want to use:
+2. Download the version of Wikidata that you want to use: 
 
-- [Wikidata Filtered (about 80M triples)](http://compact-leapfrog.tk/files/wikidata-filtered-enumerated.dat).
-- [Wikidata (about 1000M triples)](http://compact-leapfrog.tk/files/wikidata-enumerated.dat.gz). Note that this file is compressed.
+- [Wikidata Filtered (about 80M triples)](https://zenodo.org/records/13141588/files/wikidata-filtered-enumerated.tar.gz?download=1).
+- [Wikidata (about 1000M triples)](https://zenodo.org/records/13141588/files/wikidata-ring.tar.gz?download=1).
 
 Now put the .dat file inside a folder.
 
@@ -46,7 +46,10 @@ In order to build the unidirectional variants use `build-index-uring` instead of
 ```Bash
 ./query-index <absoulute-path-to-the-index-file> <absolute-path-to-the-query-file>
 ```
-In order to query the unidirectional variants use `query-index-uring` instead of `query-index`.
+There are several variants tha can replace the basic `query-index`:
+- Versions which contains `fixed` corresponds with those that use the global VEO. Otherwise, the VEO is adaptive.
+- Executables with  `veo-intersection` use the VEO that approximates the intersection by traversing the wavelet tree.
+- Variants with `uring` word are for the unidirectional version of the Ring.
 
 Note that the second argument is the path to a file that contains all the queries. The queries of our benchmark are in `Queries`:
 
