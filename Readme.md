@@ -1,6 +1,6 @@
 # Ring
 
-Repository for the source code of the engine presented in the paper Worst-Case Optimal Graph Joins on Compact Data Structures.
+Repository for the source code of the engine presented in the paper New Compressed Indices for Multijoins on Graph Databases.
 
 ## Instructions
 
