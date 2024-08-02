@@ -1,10 +1,10 @@
 # Ring
 
-Repository for the source code of the engine presented in the paper New Compressed Indices for Multijoins on Graph Databases.
+Repository for the source code of the engine presented in the paper [New Compressed Indices for Multijoins on Graph Databases](https://arxiv.org/abs/2408.00558).
 
 ## Instructions
 
-To run our code, **we have to install an extended version of the library SDSL**. Go to [this repository](https://github.com/darroyue/sdsl-lite) and follow the instructions.
+To run our code, **we have to install an extended version of the library SDSL**. Go to [this repository](https://github.com/adriangbrandon/sdsl-lite) and follow the instructions.
 
 After the extended version of SDSL is installed, we have to clone this repository and follow these steps:
 
