@@ -2,6 +2,8 @@
 
 Repository for the source code of the engine presented in the paper [New Compressed Indices for Multijoins on Graph Databases](https://arxiv.org/abs/2408.00558).
 
+**Note:** The previous version of TODS [The Ring: Worst-case Optimal Joins in Graph Databases using (Almost) No Extra Space](https://dl.acm.org/doi/10.1145/3644824) is available at [this repository](https://github.com/adriangbrandon/ring)
+
 ## Instructions
 
 To run our code, **we have to install an extended version of the library SDSL**. Go to [this repository](https://github.com/adriangbrandon/sdsl-lite) and follow the instructions.
