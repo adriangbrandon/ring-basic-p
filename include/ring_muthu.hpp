@@ -112,8 +112,7 @@ namespace ring {
 
             std::vector<uint32_t> M_O, M_S, M_P;
 
-            for (i = 1; i <= alphabet_SO; i++)
-                M_S.push_back(0);
+            M_S.resize(alphabet_SO+1, 0);
             M_S.shrink_to_fit();
 
             for (it = triple_begin, i=0; i<n; i++, it++)
