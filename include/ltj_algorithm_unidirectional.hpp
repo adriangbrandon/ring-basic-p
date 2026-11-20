@@ -52,6 +52,10 @@ namespace ring {
         typedef std::chrono::high_resolution_clock::time_point time_point_type;
         typedef typename ring_type::bwt_type::wm_type wm_type;
         typedef ::util::results_collector<tuple_type> results_type;
+        //! Number of calls to search between two clock readings for the timeout (power of 2)
+        static const size_type timeout_check_period = 4096;
+        static_assert((timeout_check_period & (timeout_check_period - 1)) == 0,
+                      "timeout_check_period must be a power of 2");
 
     private:
         const std::vector<triple_pattern>* m_ptr_triple_patterns;
@@ -60,6 +64,18 @@ namespace ring {
         std::vector<ltj_iter_type> m_iterators;
         var_to_iterators_type m_var_to_iterators;
         bool m_is_empty = false;
+        //! Calls to search*, only used to decide when to read the clock for the timeout.
+        //! It is deliberately not reset in join* nor copied in copy/move/swap: it only sets the phase of the readings.
+        size_type m_search_calls = 0;
+
+        //! Reads the clock only once every timeout_check_period calls to search*.
+        //! Returns true if the timeout has expired.
+        inline bool timeout_expired(const time_point_type start, const size_type timeout_seconds){
+            if(timeout_seconds == 0 || (m_search_calls++ & (timeout_check_period - 1)) != 0) return false;
+            time_point_type stop = std::chrono::high_resolution_clock::now();
+            auto sec = std::chrono::duration_cast<std::chrono::seconds>(stop-start).count();
+            return (size_type) sec > timeout_seconds; //sec is never negative
+        }
 
 
         void copy(const ltj_algorithm_unidirectional &o) {
@@ -189,10 +205,8 @@ namespace ring {
                     const size_type limit_results = 0, const size_type timeout_seconds = 0){
 
             //(Optional) Check timeout
-            if(timeout_seconds > 0){
-                time_point_type stop = std::chrono::high_resolution_clock::now();
-                auto sec = std::chrono::duration_cast<std::chrono::seconds>(stop-start).count();
-                if(sec > timeout_seconds) return false;
+            if(timeout_expired(start, timeout_seconds)){
+                return false;
             }
 
             //(Optional) Check limit
