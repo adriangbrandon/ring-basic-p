@@ -6,8 +6,10 @@ set(CMAKE_OSX_ARCHITECTURES "x86_64")
 project(Ring)
 set(CMAKE_PROJECT_NAME "Ring")
 
-#Change to "Debug" when you need it
-set(CMAKE_BUILD_TYPE "Debug")
+#Defaults to "Release"; use -DCMAKE_BUILD_TYPE=Debug for debugging
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release")
+endif()
 
 # C++11 compiler Check
 if(NOT CMAKE_CXX_COMPILER_VERSION) # work around for cmake versions smaller than 2.8.10
@@ -115,3 +117,7 @@ target_link_libraries(proba sdsl divsufsort divsufsort64)
 add_executable(test-timeout-period src/test/test-timeout-period.cpp)
 target_link_libraries(test-timeout-period sdsl divsufsort divsufsort64)
 set_target_properties(test-timeout-period PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)
+
+add_executable(test-ring-muthu src/test/test-ring-muthu.cpp)
+target_link_libraries(test-ring-muthu sdsl divsufsort divsufsort64)
+set_target_properties(test-ring-muthu PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)
