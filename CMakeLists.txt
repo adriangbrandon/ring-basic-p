@@ -6,8 +6,10 @@ set(CMAKE_OSX_ARCHITECTURES "x86_64")
 project(Ring)
 set(CMAKE_PROJECT_NAME "Ring")
 
-#Change to "Debug" when you need it
-set(CMAKE_BUILD_TYPE "Debug")
+#Defaults to "Release"; use -DCMAKE_BUILD_TYPE=Debug for debugging
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release")
+endif()
 
 # C++11 compiler Check
 if(NOT CMAKE_CXX_COMPILER_VERSION) # work around for cmake versions smaller than 2.8.10
