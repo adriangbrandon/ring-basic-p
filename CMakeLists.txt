@@ -114,6 +114,10 @@ target_link_libraries(check_veo sdsl divsufsort divsufsort64)
 add_executable(proba src/proba.cpp)
 target_link_libraries(proba sdsl divsufsort divsufsort64)
 
+add_executable(test-timeout-period src/test/test-timeout-period.cpp)
+target_link_libraries(test-timeout-period sdsl divsufsort divsufsort64)
+set_target_properties(test-timeout-period PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)
+
 add_executable(test-ring-muthu src/test/test-ring-muthu.cpp)
 target_link_libraries(test-ring-muthu sdsl divsufsort divsufsort64)
 set_target_properties(test-ring-muthu PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)
